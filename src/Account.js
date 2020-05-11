@@ -1,144 +1,53 @@
 import React from 'react';
-import { DatePicker, message, Input, Button,Modal,Row, Typography } from 'antd';
+import { message, Row, Button } from 'antd';
 import 'antd/dist/antd.css';
 import './index.css';
-import { AmplifySignOut } from '@aws-amplify/ui-react';
-import { Form, Field } from 'react-final-form';
+import { Field } from 'react-final-form';
 import GroupLabelField from './GroupLabelField.js';
 import { Auth } from 'aws-amplify';
 import AccountFrom from './AccountForm.js';
 import { InputCustomMask } from './layout/InputMask.js';
+import { Container, TArea } from './styles';
+import TextArea from 'antd/lib/input/TextArea';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 class Account extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
   }
-      //some code
-/*   componentDidMount(){
-    fetch(Some_API).then(response=>{
-        console.log(response.headers)
-    })
-  } */
+
+  async componentDidMount() {
+    const response = await Auth.currentAuthenticatedUser();
+    this.setState({ cognito: response.signInUserSession.idToken.jwtToken });
+  }
 
   state = {
-    date: null,
+    cognito: null
   };
 
   handleChange = date => {
     message.info(`Selecione a Data: ${date ? date.format('YYYY-MM-DD') : 'None'}`);
-    this.setState({ date });
   };
 
-
   render() {
-    const { date } = this.state;
-
     return (
-      <div>
-        <h1>Dados do Solicitante</h1>
-        <AccountFrom>
-                    <Row>
-                      <GroupLabelField label="Nome Completo" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="name"
-                          mask=""
-                          type="text"
-                          required={true}
-                        />
-                      </GroupLabelField>
-                    </Row>
-                    <Row>
-                      <GroupLabelField label="E-mail" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="email"
-                          mask=""
-                          type="text"
-                          required={true}
-                        />
-                      </GroupLabelField>
-                    </Row>
-                    <Row>
-                      <GroupLabelField label="Celular" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="cellphonenumber"
-                          mask=""
-                          type="text"
-                          required={true}
-                        />
-                      </GroupLabelField>
-                    </Row>
-                    <Row>
-                      <GroupLabelField label="Telefone Fixo" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="phonenumber"
-                          mask=""
-                          type="text"
-                          required={false}
-                        />
-                      </GroupLabelField>
-                    </Row>
-                    <Row>
-                      <GroupLabelField label="Nome da Mãe" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="mothername"
-                          mask=""
-                          type="text"
-                          required={false}
-                        />
-                      </GroupLabelField>
-                    </Row>
-                    <Row>
-                    <GroupLabelField label="Data de Nascimento" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="borndate"
-                          mask=""
-                          type="text"
-                          required={false}
-                        />
-                      </GroupLabelField>
-                    </Row>
-                  <Row>
-                    <GroupLabelField label="Renda Mensal" className="label-customizable">
-                        <Field
-                          className="inputField-customizable"
-                          component={InputCustomMask}
-                          placeholder=""
-                          name="salary"
-                          mask=""
-                          type="text"
-                          required={false}
-                        />
-                      </GroupLabelField>
-                    </Row>
-
-
-                <Row type="flex" justify="end">
-                      <button className=" next bt-submit" type="submit">
-                        Solicitar
-                      </button>
-                </Row>
-                
-                </AccountFrom>
-      </div>
+      <Container>
+        <Row type="flex" justify="center" align="middle" gutter={4}>
+          <div className="modal">
+            <div>
+              <h1>Token de Acesso APIGateway from Cognito</h1>
+              <div>
+                <TextArea rows={20} value={this.state.cognito}></TextArea>
+              </div>
+              <div>
+                <CopyToClipboard text={this.state.cognito} onCopy={() => alert('ID_TOKEN copiado')}>
+                  <Button>Copiar Token</Button>
+                </CopyToClipboard>
+              </div>
+            </div>
+          </div>
+        </Row>
+      </Container>
     );
   }
 }
