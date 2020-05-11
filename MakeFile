@@ -1,0 +1,2 @@
+#!/bin/bash
+yarn run build  && aws s3 sync build/ s3://account-credit
